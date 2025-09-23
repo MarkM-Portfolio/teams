@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: {{ template "name" .  }}-test
+  namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/hook": test-success
+
+spec:
+  containers:
+  - name: {{ template "name" . }}-tester
+    command: ["sh", "-c", "/usr/src/app/tests/runtests.sh"]
+    
+    # Image
+    image          : {{ .Values.image.repository }}/{{ template "name" . }}-tester:{{ .Values.image.tag }}
+    imagePullPolicy: {{ default "IfNotPresent" .Values.image.pullPolicy }}
+
+    # Environment
+    env:
+    - name : NODE_TLS_REJECT_UNAUTHORIZED
+      value: "0"
+
+    # Resources
+    resources:
+      limits:
+        cpu   : {{ .Values.resources.tester.limits.cpu    }}
+        memory: {{ .Values.resources.tester.limits.memory }}
+      requests:
+        cpu   : {{ .Values.resources.tester.requests.cpu    }}
+        memory: {{ .Values.resources.tester.requests.memory }}
+
+  restartPolicy: Never

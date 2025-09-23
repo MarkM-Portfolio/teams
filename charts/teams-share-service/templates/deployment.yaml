@@ -1,0 +1,135 @@
+{{- if .Capabilities.APIVersions.Has "apps/v1" }}
+apiVersion: apps/v1
+{{- else }}
+apiVersion: extensions/v1
+{{- end }}
+kind: Deployment
+
+metadata:
+  name      : {{ template "name" . }}
+  namespace : {{ .Values.namespace }}
+  labels:
+    name    : {{ template "name" . }}
+    type    : deployment
+    chart   : {{ template "chart.name" . }}
+    release : {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+
+spec:
+  replicas: {{ default 1 .Values.replicaCount }}
+
+  selector:
+    matchLabels:
+      app     : {{ template "name" . }}
+      mService: {{ template "name" . }}
+
+  strategy:
+    rollingUpdate:
+      maxUnavailable: {{ .Values.rollingUpdate.maxUnavailable }}
+      maxSurge      : {{ .Values.rollingUpdate.maxSurge       }}
+  
+  template:
+    metadata:
+      name: {{ template "name" . }}
+      labels:
+        name    : {{ template "name" .       }}
+        app     : {{ template "name" .       }}
+        mService: {{ template "name" .       }}
+        chart   : {{ template "chart.name" . }}
+        release : {{ .Release.Name           }}
+        heritage: {{ .Release.Service        }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecretName }}
+      containers:
+        - name: {{ template "name" . }}
+
+          # Image
+{{- if .Values.global.onPrem }}
+          image:  {{ .Values.global.image.repository }}/{{ .Values.name }}:{{ .Values.image.tag }}
+{{- else }}
+          image:  {{ .Values.image.repository }}/{{ .Values.name }}:{{ .Values.image.tag }}
+{{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          # Environment
+          env:
+            - name: BUILD_NUMBER
+              value: {{ .Values.image.tag }}
+            - name: NODE_ENV
+              value: production
+            - name: CONNECTIONS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configMapKeyRef.name }}
+                  key: ic-host
+            - name: MONGO_RS_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configMapKeyRef.name }}
+                  key: mongo-rs-name
+            - name: MONGO_RS_MEMBERS_HOSTS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configMapKeyRef.name }}
+                  key: mongo5-rs-members-hosts
+            - name: DB_HOST
+              value: "mongo5"
+            - name: DB_PORT
+              value: "27017"
+            - name: TEAMS_CNX_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ms-teams-secret
+                  key: ms-teams-client-id
+            - name: TEAMS_CNX_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ms-teams-secret
+                  key: ms-teams-client-secret
+          
+          # Ports
+          ports:
+            - containerPort: {{ .Values.service.internalPort }}
+
+          # Readiness 
+          readinessProbe:
+            httpGet:
+              path: /teams-share-service/healthcheck
+              port: {{ .Values.service.internalPort }}
+              scheme: {{ .Values.service.scheme }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          
+          # Liveness
+          livenessProbe:
+            httpGet:
+              httpHeaders:
+                 - name: Authorization
+                   value: "Basic {{ .Values.functional_credential }}"
+              path: /teams-share-service/healthcheck
+              port: {{ .Values.service.internalPort }}
+              scheme: {{ .Values.service.scheme }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          
+          # Resources
+          resources:
+            limits:
+              cpu: {{ .Values.resources.service.limits.cpu }}
+              memory: {{ .Values.resources.service.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.service.requests.cpu }}
+              memory: {{ .Values.resources.service.requests.memory }}
+
+          # Volumes
+          volumeMounts:
+            - name: mongo-secret-vol
+              mountPath: /etc/mongodb/x509
+
+      volumes:
+      - name: mongo-secret-vol
+        secret:
+          secretName: mongo-secret

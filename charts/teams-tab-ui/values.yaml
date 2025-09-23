@@ -1,0 +1,49 @@
+container_image_repo: connections-docker-prod.artifactory.cwp.pnp-hcl.com
+git_commit: b6759a4e321e8634c78d92fa105ef136271381c0
+global:
+  onPrem: null
+image:
+  pullPolicy: IfNotPresent
+  pullSecretName: myregkey
+  repository: connections-docker-prod.artifactory.cwp.pnp-hcl.com
+  tag: 20230919-094455
+livenessProbe:
+  httpGetPath: /healthy
+  initialDelaySeconds: 5
+  periodSeconds: 30
+  timeoutSeconds: 29
+name: teams-tab-ui
+namespace: connections
+ports:
+- 8080
+readinessProbe:
+  httpGetPath: /ready
+  initialDelaySeconds: 5
+  periodSeconds: 30
+  timeoutSeconds: 29
+replicaCount: 3
+resources:
+  service:
+    limits:
+      cpu: '0.5'
+      memory: 400Mi
+    requests:
+      cpu: '0.05'
+      memory: 75Mi
+  tester:
+    limits:
+      cpu: '0.5'
+      memory: 400Mi
+    requests:
+      cpu: '0.05'
+      memory: 75Mi
+rollingUpdate:
+  maxSurge: 2
+  maxUnavailable: 1
+scaler:
+  maxReplicas: 3
+  minReplicas: 1
+service:
+  port: 8080
+tag: 20230919-094455
+timestamp: 20230919-094455

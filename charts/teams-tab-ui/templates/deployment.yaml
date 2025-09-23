@@ -1,0 +1,104 @@
+{{- if .Capabilities.APIVersions.Has "apps/v1" }}
+apiVersion: apps/v1
+{{- else }}
+apiVersion: extensions/v1
+{{- end }}
+kind      : Deployment
+
+metadata:
+  name      : {{ template "name" . }}
+  namespace : {{ .Values.namespace }}
+  labels:
+    name    : {{ template "name" . }}
+    type    : deployment
+    chart   : {{ template "chart.name" . }}
+    release : {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+
+spec:
+  replicas: {{ default 1 .Values.replicaCount }}
+  
+  selector:
+    matchLabels:
+      app     : {{ template "name" . }}
+      mService: {{ template "name" . }}
+  
+  strategy  :
+    rollingUpdate:
+      maxUnavailable: {{ .Values.rollingUpdate.maxUnavailable }}
+      maxSurge      : {{ .Values.rollingUpdate.maxSurge       }}
+  
+  template:
+    metadata:
+      name: {{ template "name" . }}
+      labels:
+        name    : {{ template "name" .       }}
+        app     : {{ template "name" .       }}
+        mService: {{ template "name" .       }}
+        chart   : {{ template "chart.name" . }}
+        release : {{ .Release.Name           }}
+        heritage: {{ .Release.Service        }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecretName }}
+      containers:
+        - name: {{ template "name" . }}
+
+          # Image
+{{- if .Values.global.onPrem }}
+          image:  {{ .Values.global.image.repository }}/{{ .Values.name }}:{{ .Values.image.tag }}
+{{- else }}
+          image:  {{ .Values.image.repository }}/{{ .Values.name }}:{{ .Values.image.tag }}
+{{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          
+          # Environment
+          env:
+          - name : NODE_TLS_REJECT_UNAUTHORIZED
+            value: "0"
+          - name : NODE_ENV
+            value: production
+          {{- range .Values.environment }}
+          - name: {{ .name }}
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.env.configMapKeyRef.name }}
+                key : {{ .key }}
+          {{- end }}
+
+          # Ports
+          ports:
+          {{- range .Values.ports }}
+          - containerPort: {{ . }}
+          {{- end }}
+
+          # Readiness
+          {{- if .Values.readinessProbe }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readinessProbe.httpGetPath }}
+              port: {{ .Values.service.port               }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds      : {{ .Values.readinessProbe.periodSeconds       }}
+            timeoutSeconds     : {{ .Values.readinessProbe.timeoutSeconds      }}
+          {{- end }}
+
+          # Liveness
+          {{- if .Values.livenessProbe }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.livenessProbe.httpGetPath }}
+              port: {{ .Values.service.port              }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds      : {{ .Values.livenessProbe.periodSeconds       }}
+            timeoutSeconds     : {{ .Values.livenessProbe.timeoutSeconds      }}
+          {{- end }}
+
+          # Resources
+          resources:
+            limits  :
+              cpu   : {{ .Values.resources.service.limits.cpu    }}
+              memory: {{ .Values.resources.service.limits.memory }}
+            requests:
+              cpu   : {{ .Values.resources.service.requests.cpu    }}
+              memory: {{ .Values.resources.service.requests.memory }}

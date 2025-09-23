@@ -1,0 +1,15 @@
+dependencies:
+- name: teams-share-ui
+  repository: https://artifactory.cwp.pnp-hcl.com/artifactory/connections-helm-prod
+  version: 1.0.0-20230918-122736
+- name: teams-share-service
+  repository: https://artifactory.cwp.pnp-hcl.com/artifactory/connections-helm-prod
+  version: 1.0.0-20230918-122729
+- name: teams-tab-api
+  repository: https://artifactory.cwp.pnp-hcl.com/artifactory/connections-helm-prod
+  version: 0.0.1-20230918-122730
+- name: teams-tab-ui
+  repository: https://artifactory.cwp.pnp-hcl.com/artifactory/connections-helm-prod
+  version: 0.0.1-20230919-094455
+digest: sha256:bc4132d153ae872279e45251230107fa441c5c7e8ba010c3c629319eaba6309b
+generated: "2023-10-06T09:00:52.751387839Z"

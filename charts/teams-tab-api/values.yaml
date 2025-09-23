@@ -1,0 +1,52 @@
+container_image_repo: connections-docker-prod.artifactory.cwp.pnp-hcl.com
+environment:
+- key: ic-host
+  name: CONNECTIONS_WAS_HOST
+git_commit: cc64a039bdf382c2207786d92d94d9407e881c15
+global:
+  onPrem: null
+image:
+  pullPolicy: IfNotPresent
+  pullSecretName: myregkey
+  repository: connections-docker-prod.artifactory.cwp.pnp-hcl.com
+  tag: 20230918-122730
+livenessProbe:
+  httpGetPath: /teams-tab/api/v0/health
+  initialDelaySeconds: 5
+  periodSeconds: 30
+  timeoutSeconds: 29
+name: teams-tab-api
+namespace: connections
+ports:
+- 3000
+readinessProbe:
+  httpGetPath: /teams-tab/api/v0/ready
+  initialDelaySeconds: 5
+  periodSeconds: 30
+  timeoutSeconds: 29
+replicaCount: 3
+resources:
+  service:
+    limits:
+      cpu: '0.5'
+      memory: 400Mi
+    requests:
+      cpu: '0.05'
+      memory: 75Mi
+  tester:
+    limits:
+      cpu: '0.5'
+      memory: 400Mi
+    requests:
+      cpu: '0.05'
+      memory: 75Mi
+rollingUpdate:
+  maxSurge: 2
+  maxUnavailable: 1
+scaler:
+  maxReplicas: 3
+  minReplicas: 1
+service:
+  port: 3000
+tag: 20230918-122730
+timestamp: 20230918-122730

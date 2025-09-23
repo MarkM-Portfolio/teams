@@ -1,0 +1,13 @@
+apiVersion: v1
+description: This chart contains the integration microservices for sharing Connections
+  files to MS Teams
+home: https://git.cwp.pnp-hcl.com/connections/teams-share-service
+keywords:
+- files
+- integrations
+maintainers:
+- name: Titan Squad
+name: teams-share-service
+sources:
+- https://git.cwp.pnp-hcl.com/connections/teams-share-service
+version: 1.0.0-20230918-122729

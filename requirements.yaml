@@ -1,0 +1,13 @@
+dependencies:
+  - name: teams-share-ui
+    repository: '@connections-prod'
+    version: 1.0.0-20230918-122736
+  - name: teams-share-service
+    repository: '@connections-prod'
+    version: 1.0.0-20230918-122729
+  - name: teams-tab-api
+    repository: '@connections-prod'
+    version: 0.0.1-20230918-122730
+  - name: teams-tab-ui
+    repository: '@connections-prod'
+    version: 0.0.1-20230919-094455

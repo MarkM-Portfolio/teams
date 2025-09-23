@@ -1,0 +1,55 @@
+container_image_repo: connections-docker-prod.artifactory.cwp.pnp-hcl.com
+env:
+  configMapKeyRef:
+    name: connections-env
+git_commit: 4a60a05608fbeb436fbe801ac4475dfd01584f76
+global:
+  onPrem: null
+hostname: teams-share-ui
+image:
+  pullPolicy: IfNotPresent
+  pullSecretName: myregkey
+  repository: connections-docker-prod.artifactory.cwp.pnp-hcl.com
+  tag: 20230918-122736
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 10
+name: teams-share-ui
+namespace: connections
+node_env: production
+readinessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 10
+replicaCount: 3
+resources:
+  service:
+    limits:
+      cpu: '0.5'
+      memory: 400Mi
+    requests:
+      cpu: '0.05'
+      memory: 75Mi
+  tester:
+    limits:
+      cpu: '0.5'
+      memory: 400Mi
+    requests:
+      cpu: '0.05'
+      memory: 75Mi
+rollingUpdate:
+  maxSurge: 2
+  maxUnavailable: 1
+scaler:
+  maxReplicas: 3
+  minReplicas: 1
+service:
+  externalPort: 3000
+  internalPort: 3000
+  scheme: HTTP
+tag: 20230918-122736
+teams:
+  configMapKeyRef:
+    name: integrations-msteams-env
+timestamp: 20230918-122736

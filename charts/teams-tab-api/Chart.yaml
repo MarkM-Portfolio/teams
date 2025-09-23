@@ -1,0 +1,14 @@
+apiVersion: v1
+description: REST APIs for Teams Tab Application
+home: https://git.cwp.pnp-hcl.com/connections/teams-tab-api
+keywords:
+- tab
+- teams
+- api
+- rest
+maintainers:
+- name: Bisons Squad
+name: teams-tab-api
+sources:
+- https://git.cwp.pnp-hcl.com/connections/teams-tab-api
+version: 0.0.1-20230918-122730

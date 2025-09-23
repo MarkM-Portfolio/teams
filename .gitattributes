@@ -1,0 +1,16 @@
+**/Chart.yaml linguist-language=Kubernetes linguist-vendored=false
+**/autoscale.yaml linguist-language=Kubernetes linguist-vendored=false
+**/autoscaler.yaml linguist-language=Kubernetes linguist-vendored=false
+**/deployment.yaml linguist-language=Kubernetes linguist-vendored=false
+**/ingress.yml linguist-language=Kubernetes linguist-vendored=false
+**/service.yaml linguist-language=Kubernetes linguist-vendored=false
+**/teams-share-service-tester.yaml linguist-language=Kubernetes linguist-vendored=false
+**/teams-share-ui-tester.yaml linguist-language=Kubernetes linguist-vendored=false
+**/teams-tab-api-tester.yaml linguist-language=Kubernetes linguist-vendored=false
+**/teams-tab-ui-tester.yaml linguist-language=Kubernetes linguist-vendored=false
+**/values.yaml linguist-language=Kubernetes linguist-vendored=false
+*.gitignore linguist-language=Git linguist-vendored=false
+*.helmignore linguist-language=Helmignore linguist-vendored=false
+*.lock linguist-language=Lock linguist-vendored=false
+*.tpl linguist-language=Template File linguist-vendored=false
+*.yml linguist-language=YAML linguist-vendored=false

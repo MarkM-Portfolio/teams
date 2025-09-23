@@ -1,0 +1,14 @@
+apiVersion: v1
+description: This chart contains the MS Teams CNX Files UI microservice.
+home: https://git.cwp.pnp-hcl.com/connections/teams-share-ui
+keywords:
+- connections
+- files
+- ms-teams
+- integrations
+maintainers:
+- name: Titan Squad
+name: teams-share-ui
+sources:
+- https://git.cwp.pnp-hcl.com/connections/teams-share-ui
+version: 1.0.0-20230918-122736
